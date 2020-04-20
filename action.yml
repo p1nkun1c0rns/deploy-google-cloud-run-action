@@ -1,0 +1,59 @@
+name: 'Deploy To Google Cloud Run'
+description: 'Deploy a service revision to Google Cloud Run using gcloud SDK'
+branding:
+  icon: 'upload-cloud'  
+  color: 'orange'
+inputs:
+  project_id:
+    description: 'GCP project ID'
+    required: true
+  service_account_key:
+    description: 'Base64 encoded JSON key for GCP service account'
+    required: true
+  image_name:
+    description: 'Name of container image to be deployed'
+    required: true
+  service_name:
+    description: 'Name of the service to be deployed'
+    required: true
+  gcp_region:
+    description: 'GCP region to deploy the service in'
+    required: true
+  image_tag:
+    description: 'Tag of container image to be deployed'
+    required: false
+    default: 'latest'
+  concurrency_per_instance:
+    description: 'Max number of concurrent requests per instance, max: 80'
+    required: false
+    default: '80'
+  cpu:
+    description: 'VCPU limit per instance'
+    required: false
+    default: '1'
+  memory:
+    description: 'Memory limit per instance'
+    required: false
+    default: '256Mi'
+  max_instances:
+    description: 'Max nummber of instances to be scaled'
+    required: false
+    default: '10'
+  request_timeout:
+    description: 'Timeout for a single request to be processed'
+    required: false
+    default: '10s'
+  allow_unauthenticated:
+    description: 'Wether the service should not be protected by GCP authorization'
+    required: false
+    default: 'true'
+outputs:
+  cloud_run_revision:
+    description: 'Revision of the deployed service'
+  cloud_run_endpoint:
+    description: 'Endpoint the service is serving at'
+  gcloud_log:
+    description: 'Log output of the gcloud run deploy command'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
