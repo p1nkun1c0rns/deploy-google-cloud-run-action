@@ -48,7 +48,7 @@ becomes:
 ```yaml
   - name: Deploy Cloud Run
     id: deploy
-    uses: heubeck/deploy-google-cloud-run-action@master
+    uses: p1nkun1c0rns/deploy-google-cloud-run-action@master
     with:
       service_account_key: ${{ secrets.GOOGLE_SERVICEACCOUNT_KEY }}
       project_id: your-gcp-project-id
