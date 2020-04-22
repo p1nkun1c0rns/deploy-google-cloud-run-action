@@ -20,6 +20,7 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `max_instances` | Max nummber of instances to be scaled | `10` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--max-instances) |
 | `request_timeout` | Timeout for a single request to be processed | `10s` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--timeout) |
 | `allow_unauthenticated` | Wether the service should not be protected by GCP authorization | `true` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy) |
+| `service_account` | Service Account to be used by the revision to be deployed | GCP docs: "If not provided, the revision will use the project's default service account." | false | [gcloud_run_deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--service-account) |
 
 ### Environment
 
@@ -75,10 +76,6 @@ becomes:
 
 * The service revision suffix is built from the `image_tag` replacing the dots with dashes concatinating the current epoch seconds for beeing able to redeploy the same version with different configuration.
 * Container image name is built by concatinating `image_name`:`image_tag`
-
-## TODO
-
-* Add service account to be used
 
 ## Contribution
 

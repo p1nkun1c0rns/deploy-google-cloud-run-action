@@ -34,8 +34,13 @@ if [ "$INPUT_ALLOW_UNAUTHENTICATED" = "true" ]; then
   ALLOW_UNAUTHENTICATED="--allow-unauthenticated"
 fi
 
+SERVICE_ACCOUNT=""
+if [ "$INPUT_SERVICE_ACCOUNT" != "default" ]; then
+  SERVICE_ACCOUNT="--service-account $INPUT_SERVICE_ACCOUNT"
+fi
+
 gcloud run deploy "$INPUT_SERVICE_NAME" \
-  --platform "managed" "$ALLOW_UNAUTHENTICATED" \
+  --platform "managed" "$ALLOW_UNAUTHENTICATED" "$SERVICE_ACCOUNT" \
   --region "$INPUT_GCP_REGION" \
   --image "${FQ_IMAGE}" \
   --concurrency "$INPUT_CONCURRENCY_PER_INSTANCE" \

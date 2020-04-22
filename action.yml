@@ -47,6 +47,10 @@ inputs:
     description: 'Wether the service should not be protected by GCP authorization'
     required: false
     default: 'true'
+  service_account:
+    description: 'Service Account to be used by the revision to be deployed'
+    required: false
+    default: 'default'
 outputs:
   cloud_run_revision:
     description: 'Revision of the deployed service'
