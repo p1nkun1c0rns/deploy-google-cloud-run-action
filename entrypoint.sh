@@ -1,4 +1,20 @@
-#!/bin/sh
+#!/bin/bash
+
+if [ "$INPUT_DEBUG" = "true" ]; then
+  echo "=== gcloud version ==="
+  gcloud version
+  echo "======================"
+fi
+
+function enableDebug() {
+  if [ "$INPUT_DEBUG" = "true" ]; then
+    set -x
+  fi
+}
+
+function disableDebug() {
+  set +x
+}
 
 set -e
 set -o pipefail
@@ -6,12 +22,16 @@ set -o pipefail
 echo "$INPUT_SERVICE_ACCOUNT_KEY" | base64 -d >key.json
 trap "{ rm -f key.json; }" EXIT
 
+enableDebug
 gcloud auth activate-service-account --key-file=key.json --project="$INPUT_PROJECT_ID"
+disableDebug
 
 FQ_IMAGE="${INPUT_IMAGE_NAME}:${INPUT_IMAGE_TAG}"
 REVISION_SUFFIX=v$(echo "$INPUT_IMAGE_TAG" | sed "s;\.;-;g")-t$(date +%s)
 
+enableDebug
 LAST_REVISION=$(gcloud run revisions list --platform=managed --project="$INPUT_PROJECT_ID" --region="$INPUT_GCP_REGION" --service="$INPUT_SERVICE_NAME" | grep yes | awk '{print $2}')
+disableDebug
 
 echo "Deploying $FQ_IMAGE as service $INPUT_SERVICE_NAME to $INPUT_GCP_REGION in revision $REVISION_SUFFIX replacing $LAST_REVISION"
 
@@ -39,8 +59,9 @@ if [ "$INPUT_SERVICE_ACCOUNT" != "default" ]; then
   SERVICE_ACCOUNT="--service-account $INPUT_SERVICE_ACCOUNT"
 fi
 
+enableDebug
 gcloud run deploy "$INPUT_SERVICE_NAME" \
-  --platform "managed" "$ALLOW_UNAUTHENTICATED" "$SERVICE_ACCOUNT" \
+  --platform "managed" $ALLOW_UNAUTHENTICATED $SERVICE_ACCOUNT \
   --region "$INPUT_GCP_REGION" \
   --image "${FQ_IMAGE}" \
   --concurrency "$INPUT_CONCURRENCY_PER_INSTANCE" \
@@ -50,6 +71,7 @@ gcloud run deploy "$INPUT_SERVICE_NAME" \
   --timeout "$INPUT_REQUEST_TIMEOUT" \
   --revision-suffix "${REVISION_SUFFIX}" \
   --set-env-vars "${ENV_VARS}" 2>&1 | tee gcloud.log
+disableDebug
 
 ENDPOINT=$(cat gcloud.log | grep -o 'traffic at .*')
 
