@@ -26,13 +26,17 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 ### Environment
 
 For passing configuration and secrets to the Cloud Run service [`--set-env-vars`](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--set-env-vars) is used.
+
 All env variables starting with `SET_ENV_` are passed:
+
 ```yaml
 env:
   SET_ENV_DISABLE_SIGNAL_HANDLERS: yeah
   SET_ENV_APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET }}
 ```
+
 becomes:
+
 ```shell script
 --set-env-vars 'DISABLE_SIGNAL_HANDLERS=yeah,APPLICATION_SECRET=***'
 ```
