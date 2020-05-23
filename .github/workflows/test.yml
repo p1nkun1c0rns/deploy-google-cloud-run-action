@@ -1,0 +1,40 @@
+name: "Test"
+on:
+  push:
+    branches-ignore:
+      - 'dependabot/*'
+  schedule:
+    - cron: '22 22 * * 5'
+env:
+  IMAGE: ${{ github.repository }}
+
+jobs:
+  lint:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Markdown Lint
+        uses: actionshub/markdownlint@v1.0.0
+
+      - name: YAML Lint
+        uses: karancode/yamllint-github-action@master
+        with:
+          yamllint_config_filepath: .yamllint.yaml
+          yamllint_file_or_dir: action.yml
+
+      - name: Dockerfile Lint
+        uses: burdzwastaken/hadolint-action@1.6.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HADOLINT_ACTION_DOCKERFILE_FOLDER: .
+#  test:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v2
+#
+#    - name: Install bats
+#      run: sudo apt-get -y install bats > /dev/null
+#
+#    - name: Run CI script
+#      run: ./tests/run.bats
