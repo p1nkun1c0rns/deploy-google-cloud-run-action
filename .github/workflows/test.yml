@@ -23,25 +23,11 @@ jobs:
           yamllint_config_filepath: .yamllint.yaml
           yamllint_file_or_dir: action.yml
 
-      - name: Dockerfile Lint
-        uses: burdzwastaken/hadolint-action@1.6.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HADOLINT_ACTION_DOCKERFILE_FOLDER: .
 
   test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-
-    - name: Build Docker image
-      run: |
-        docker build -t ${IMAGE}:test .
-
-    - name: Run container-structure-test tests
-      run: |
-        curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && mkdir -p $HOME/bin && export PATH=$PATH:$HOME/bin && mv container-structure-test-linux-amd64 $HOME/bin/container-structure-test
-        container-structure-test test --image ${IMAGE}:test --config tests/structure_test.yaml
 
     - name: Install bats
       run: sudo apt-get -y install bats > /dev/null

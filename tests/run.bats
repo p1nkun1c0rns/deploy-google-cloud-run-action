@@ -1,11 +1,13 @@
 #!/usr/bin/env bats
 
 # global variables ############################################################
-CONTAINER_NAME="deploy-google-cloud-run-action"
+IMAGE="deploy-google-cloud-run-action"
+CST_VERSION="latest" # version of GoogleContainerTools/container-structure-test
+HADOLINT_VERSION="v1.17.6-9-g550ee0d-alpine"
 
 # build container to test the behavior ########################################
 @test "build container" {
-  docker build -t $CONTAINER_NAME . >&2
+  docker build -t $IMAGE . >&2
 }
 
 # functions ###################################################################
@@ -43,16 +45,50 @@ function debug() {
 ###############################################################################
 
 @test "just start" {
-  INPUT_PATH="/mnt/good_case_1"
-  INPUT_FILES=".yaml"
-  INPUT_EXCLUDE="skip"
-
   run docker run --rm \
   -v "$(pwd)/tests/data:/mnt/" \
-  -i $CONTAINER_NAME
+  -i $IMAGE
 
   debug "${status}" "${output}" "${lines}"
 
   echo $output | grep -q "Could not read json file key.json"
   [[ "${status}" -eq 1 ]]
+}
+
+@test "start hadolint" {
+  docker run --rm -i hadolint/hadolint:$HADOLINT_VERSION < Dockerfile
+  debug "${status}" "${output}" "${lines}"
+  [[ "${status}" -eq 0 ]]
+}
+
+@test "start container-structure-test" {
+
+  # init
+  mkdir -p $HOME/bin
+  export PATH=$PATH:$HOME/bin
+
+  # check the os
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+          cst_os="linux"
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+          cst_os="darwin"
+  else
+          skip "This test is not supported on your OS platform 😒"
+  fi
+
+  # donwload the container-structure-test binary
+  cst_bin_name="container-structure-test-$cst_os-amd64"
+  cst_download_url="https://storage.googleapis.com/container-structure-test/$CST_VERSION/$cst_bin_name"
+
+  if [ ! -f "$HOME/bin/container-structure-test" ]; then
+    curl -LO $cst_download_url
+    chmod +x $cst_bin_name
+    mv $cst_bin_name $HOME/bin/container-structure-test
+  fi
+
+  container-structure-test test --image ${IMAGE} -q --config tests/structure_test.yaml
+
+  debug "${status}" "${output}" "${lines}"
+
+  [[ "${status}" -eq 0 ]]
 }
