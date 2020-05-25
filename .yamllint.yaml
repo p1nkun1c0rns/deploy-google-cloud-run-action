@@ -1,0 +1,13 @@
+ignore: templates
+
+rules:
+  comments:
+    level: warning
+  comments-indentation:
+    level: warning
+  document-end: disable
+  document-start:
+    level: warning
+  line-length: disable
+  truthy:
+    level: warning

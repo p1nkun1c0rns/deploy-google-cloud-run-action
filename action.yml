@@ -1,7 +1,8 @@
+---
 name: 'Deploy To Google Cloud Run'
 description: 'Deploy a service revision to Google Cloud Run using gcloud SDK'
 branding:
-  icon: 'upload-cloud'  
+  icon: 'upload-cloud'
   color: 'orange'
 inputs:
   project_id:
