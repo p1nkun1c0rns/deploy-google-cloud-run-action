@@ -23,7 +23,11 @@ inputs:
   image_tag:
     description: 'Tag of container image to be deployed'
     required: false
-    default: 'latest'
+    default: ''
+  image_tag_pattern:
+    description: 'Regex pattern to identify the image_tag automatically'
+    required: false
+    default: ''
   concurrency_per_instance:
     description: 'Max number of concurrent requests per instance, max: 80'
     required: false
@@ -52,6 +56,10 @@ inputs:
     description: 'Service Account to be used by the revision to be deployed'
     required: false
     default: 'default'
+  no_traffic:
+    description: 'Set to true for just deploying a new revision without shifting traffic'
+    required: false
+    default: 'false'
   debug:
     description: 'Whether the gcloud commands should be printed to output'
     required: false
@@ -63,6 +71,8 @@ outputs:
     description: 'Endpoint the service is serving at'
   gcloud_log:
     description: 'Log output of the gcloud run deploy command'
+  deployed_image_tag:
+    description: 'Tag of the deployed image'
 runs:
   using: 'docker'
   image: 'Dockerfile'

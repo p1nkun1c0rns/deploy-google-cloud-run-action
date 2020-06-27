@@ -14,6 +14,7 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `service_name` | Name of the service to be deployed |  | true | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#SERVICE) |
 | `gcp_region` | GCP region to deploy the service in |  | true | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--region) |
 | `image_tag` | Tag of container image to be deployed | `latest` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--image) |
+| `image_tag_pattern` | Regex pattern to identify the image_tag automatically | `` | false | [see below](https://github.com/p1nkun1c0rns/deploy-google-cloud-run-action#image_tag_pattern) |
 | `concurrency_per_instance` | Max number of concurrent requests per instance, max: 80 | `80` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--concurrency) |
 | `cpu` | VCPU limit per instance | `1` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--cpu) |
 | `memory` | Memory limit per instance | `256Mi` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--memory) |
@@ -21,7 +22,15 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `request_timeout` | Timeout for a single request to be processed | `10s` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--timeout) |
 | `allow_unauthenticated` | Wether the service should not be protected by GCP authorization | `true` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy) |
 | `service_account` | Service Account to be used by the revision to be deployed | GCP docs: "If not provided, the revision will use the project's default service account." | false | [gcloud_run_deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--service-account) |
+| `no_traffic` | Set to true for just deploying a new revision without shifting traffic | `false` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--no-traffic) |
 | `debug` | Whether the gcloud commands should be printed to output | `false` | false | | 
+
+#### image_tag_pattern
+
+If parameter `image_tag_pattern` is provided and no explicit `image_tag` is given, the highest image tag (bash `sort`) matching the pattern (`grep -E "^${image_tag_pattern}"`) will be deployed.
+For doing this, the used GCP service account has to have the role _`roles/storage.objectViewer`_.
+
+Example: `image_tag_pattern: 1\.3\.\d+`
 
 ### Environment
 
@@ -48,6 +57,7 @@ becomes:
 | cloud_run_revision | Revision of the deployed service | yourservice-v1-5-1-t1587453463 |
 | cloud_run_endpoint | Endpoint the service is serving at | https://yourservice-djgts23jkbq-ez.a.run.app |
 | gcloud_log | Log output of the gcloud run deploy command |  |
+| deployed_image_tag | Tag of the image that was deployed | 1.3.23 |
 
 ## Usage
 

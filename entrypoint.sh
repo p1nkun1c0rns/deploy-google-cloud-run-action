@@ -26,14 +26,20 @@ enableDebug
 gcloud auth activate-service-account --key-file=key.json --project="$INPUT_PROJECT_ID"
 disableDebug
 
-FQ_IMAGE="${INPUT_IMAGE_NAME}:${INPUT_IMAGE_TAG}"
-REVISION_SUFFIX=v$(echo "$INPUT_IMAGE_TAG" | sed "s;\.;-;g")-t$(date +%s)
+IMAGE_TAG="latest"
+if [ -n "$INPUT_IMAGE_TAG" ]; then
+  IMAGE_TAG="$INPUT_IMAGE_TAG"
+elif [ -n "$INPUT_IMAGE_TAG_PATTERN" ]; then
+  # read image tags from registry, grep by pattern and sort for the latest
+  enableDebug
+  IMAGE_TAG=$(gcloud container images list-tags "$INPUT_IMAGE_NAME" --format json | jq -r '.[].tags | .[]' | grep -E "^${INPUT_IMAGE_TAG_PATTERN}" | sort -V | tail -n 1)
+  disableDebug
+fi
 
-enableDebug
-LAST_REVISION=$(gcloud run revisions list --platform=managed --project="$INPUT_PROJECT_ID" --region="$INPUT_GCP_REGION" --service="$INPUT_SERVICE_NAME" | grep yes | awk '{print $2}')
-disableDebug
+FQ_IMAGE="${INPUT_IMAGE_NAME}:${IMAGE_TAG}"
+REVISION_SUFFIX=v$(echo "$IMAGE_TAG" | sed "s;\.;-;g")-t$(date +%s)
 
-echo "Deploying $FQ_IMAGE as service $INPUT_SERVICE_NAME to $INPUT_GCP_REGION in revision $REVISION_SUFFIX replacing $LAST_REVISION"
+echo "Deploying $FQ_IMAGE as service $INPUT_SERVICE_NAME to $INPUT_GCP_REGION in revision $REVISION_SUFFIX."
 
 # turn off globbing
 set -f
@@ -56,21 +62,26 @@ fi
 
 SERVICE_ACCOUNT=""
 if [ "$INPUT_SERVICE_ACCOUNT" != "default" ]; then
-  SERVICE_ACCOUNT="--service-account $INPUT_SERVICE_ACCOUNT"
+  SERVICE_ACCOUNT="--service-account=$INPUT_SERVICE_ACCOUNT"
+fi
+
+NO_TRAFFIC=""
+if [ "$INPUT_NO_TRAFFIC" = "true" ]; then
+  NO_TRAFFIC="--no-traffic"
 fi
 
 enableDebug
 gcloud run deploy "$INPUT_SERVICE_NAME" \
-  --platform "managed" $ALLOW_UNAUTHENTICATED $SERVICE_ACCOUNT \
-  --region "$INPUT_GCP_REGION" \
-  --image "${FQ_IMAGE}" \
-  --concurrency "$INPUT_CONCURRENCY_PER_INSTANCE" \
-  --cpu "$INPUT_CPU" \
-  --max-instances "$INPUT_MAX_INSTANCES" \
-  --memory "$INPUT_MEMORY" \
-  --timeout "$INPUT_REQUEST_TIMEOUT" \
-  --revision-suffix "${REVISION_SUFFIX}" \
-  --set-env-vars "${ENV_VARS}" 2>&1 | tee gcloud.log
+  --platform="managed" $ALLOW_UNAUTHENTICATED "$SERVICE_ACCOUNT" $NO_TRAFFIC \
+  --region="$INPUT_GCP_REGION" \
+  --image="${FQ_IMAGE}" \
+  --concurrency="$INPUT_CONCURRENCY_PER_INSTANCE" \
+  --cpu="$INPUT_CPU" \
+  --max-instances="$INPUT_MAX_INSTANCES" \
+  --memory="$INPUT_MEMORY" \
+  --timeout="$INPUT_REQUEST_TIMEOUT" \
+  --revision-suffix="${REVISION_SUFFIX}" \
+  --set-env-vars="${ENV_VARS}" 2>&1 | tee gcloud.log
 disableDebug
 
 ENDPOINT=$(cat gcloud.log | grep -o 'traffic at .*')
@@ -78,3 +89,4 @@ ENDPOINT=$(cat gcloud.log | grep -o 'traffic at .*')
 echo ::set-output name=gcloud_log::"<pre>$(sed ':a;N;$!ba;s/\n/<br>/g' gcloud.log)</pre>"
 echo ::set-output name=cloud_run_revision::"${INPUT_SERVICE_NAME}-${REVISION_SUFFIX}"
 echo ::set-output name=cloud_run_endpoint::"${ENDPOINT/traffic at /}"
+echo ::set-output name=deployed_image_tag::"${IMAGE_TAG}"
