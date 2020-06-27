@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Markdown Lint
-        uses: actionshub/markdownlint@v1.0.0
+        uses: actionshub/markdownlint@1.2.1
 
       - name: YAML Lint
         uses: karancode/yamllint-github-action@master
