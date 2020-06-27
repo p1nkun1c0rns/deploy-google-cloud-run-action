@@ -57,7 +57,7 @@ inputs:
     required: false
     default: 'default'
   no_traffic:
-    description: 'Set to true for just deploying a new revision without shifting traffic'
+    description: 'Set to true to just deploy a new revision without shifting traffic'
     required: false
     default: 'false'
   debug:
