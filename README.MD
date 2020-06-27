@@ -22,7 +22,7 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `request_timeout` | Timeout for a single request to be processed | `10s` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--timeout) |
 | `allow_unauthenticated` | Wether the service should not be protected by GCP authorization | `true` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy) |
 | `service_account` | Service Account to be used by the revision to be deployed | GCP docs: "If not provided, the revision will use the project's default service account." | false | [gcloud_run_deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--service-account) |
-| `no_traffic` | Set to true for just deploying a new revision without shifting traffic | `false` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--no-traffic) |
+| `no_traffic` | Set to true to just deploy a new revision without shifting traffic | `false` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--no-traffic) |
 | `debug` | Whether the gcloud commands should be printed to output | `false` | false | | 
 
 #### image_tag_pattern
