@@ -87,6 +87,16 @@ becomes:
         ${{ steps.deploy.outputs.gcloud_log }}
 ```
 
+### Prebuild latest image
+
+Instead of using the latest (`@master`) or a tagged version there's always a prebuild image in the `action` branch:
+
+```yaml
+  - name: Deploy Cloud Run
+    id: deploy
+    uses: p1nkun1c0rns/deploy-google-cloud-run-action@action
+```
+
 ## Remarks
 
 * The service revision suffix is built from the `image_tag` replacing the dots with dashes concatinating the current epoch seconds for beeing able to redeploy the same version with different configuration.

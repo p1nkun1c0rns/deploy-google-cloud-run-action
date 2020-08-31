@@ -1,0 +1,36 @@
+name: Pre-Build Image
+on:
+  release:
+    types: [released]
+
+env:
+  IMAGE: 'quay.io/heubeck/deploy-google-cloud-run-action:${{ github.event.release.tag_name }}'
+jobs:
+  build:
+    name: Build action image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Image build and push
+        env:
+          QUAY_USER: ${{ secrets.QUAY_USER }}
+          QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+        run: |
+          docker build . -f Dockerfile -t "$IMAGE"
+          docker login -u="$QUAY_USER" -p="$QUAY_PASSWORD" quay.io
+          docker push "$IMAGE"
+          echo "FROM $IMAGE" > Dockerfile
+
+          git config --local user.email "p1nkun1c@rns"
+          git config --local user.name "yours sincerely CI"
+          git add Dockerfile
+          git commit -m "Update latest image"
+
+      - name: Refresh latest action branch
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: 'action'
+          force: true
