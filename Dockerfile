@@ -1,4 +1,4 @@
-FROM google/cloud-sdk:307.0.0-alpine
+FROM google/cloud-sdk:308.0.0-alpine
 
 COPY entrypoint.sh /entrypoint.sh
 RUN apk add --no-cache jq=1.6-r0 && \
