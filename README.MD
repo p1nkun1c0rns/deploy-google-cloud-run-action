@@ -1,5 +1,8 @@
 # Deploy Google Cloud Run Service Action
 
+![inbound-build](https://github.com/p1nkun1c0rns/deploy-google-cloud-run-action/workflows/Pre-Build%20Image/badge.svg)
+![event-store-build](https://github.com/p1nkun1c0rns/deploy-google-cloud-run-action/workflows/Test/badge.svg)
+
 A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-Serving).
 
 ## Input

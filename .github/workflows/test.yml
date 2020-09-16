@@ -23,7 +23,6 @@ jobs:
           yamllint_config_filepath: .yamllint.yaml
           yamllint_file_or_dir: action.yml
 
-
   test:
     runs-on: ubuntu-latest
     steps:
