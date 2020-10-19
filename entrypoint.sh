@@ -72,7 +72,7 @@ fi
 
 enableDebug
 gcloud run deploy "$INPUT_SERVICE_NAME" \
-  --platform="managed" $ALLOW_UNAUTHENTICATED "$SERVICE_ACCOUNT" $NO_TRAFFIC \
+  --platform="managed" $ALLOW_UNAUTHENTICATED $SERVICE_ACCOUNT $NO_TRAFFIC \
   --region="$INPUT_GCP_REGION" \
   --image="${FQ_IMAGE}" \
   --concurrency="$INPUT_CONCURRENCY_PER_INSTANCE" \
@@ -84,9 +84,9 @@ gcloud run deploy "$INPUT_SERVICE_NAME" \
   --set-env-vars="${ENV_VARS}" 2>&1 | tee gcloud.log
 disableDebug
 
-ENDPOINT=$(cat gcloud.log | grep -o 'traffic at .*')
+ENDPOINT=$(cat gcloud.log | grep -o 'Service URL: .*')
 
 echo ::set-output name=gcloud_log::"<pre>$(sed ':a;N;$!ba;s/\n/<br>/g' gcloud.log)</pre>"
 echo ::set-output name=cloud_run_revision::"${INPUT_SERVICE_NAME}-${REVISION_SUFFIX}"
-echo ::set-output name=cloud_run_endpoint::"${ENDPOINT/traffic at /}"
+echo ::set-output name=cloud_run_endpoint::"${ENDPOINT/Service URL: /}"
 echo ::set-output name=deployed_image_tag::"${IMAGE_TAG}"
