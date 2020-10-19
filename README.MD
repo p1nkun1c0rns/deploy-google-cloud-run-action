@@ -28,12 +28,19 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `no_traffic` | Set to true to just deploy a new revision without shifting traffic | `false` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--no-traffic) |
 | `debug` | Whether the gcloud commands should be printed to output | `false` | false | | 
 
-#### image_tag_pattern
+#### `image_tag_pattern`
 
 If parameter `image_tag_pattern` is provided and no explicit `image_tag` is given, the highest image tag (bash `sort`) matching the pattern (`grep -E "^${image_tag_pattern}"`) will be deployed.
 For doing this, the used GCP service account has to have the role _`roles/storage.objectViewer`_.
 
 Example: `image_tag_pattern: 1\.3\.\d+`
+
+#### `service_account_key`
+
+The service account needs the following roles for the deployment to work properly:
+* `roles/run.admin`
+* `roles/iam.serviceAccountUser`
+* (optional) `roles/storage.objectViewer` - see **`image_tag_pattern`**
 
 ### Environment
 
