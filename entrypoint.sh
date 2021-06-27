@@ -55,6 +55,27 @@ for e in $(env | grep SET_ENV_); do
   ENV_VARS="${ENV_VARS}${e/SET_ENV_/}"
 done
 
+if [ -n "$ENV_VARS" ]; then
+  ENV_VARS="--set-env-vars=${ENV_VARS}"
+else
+  ENV_VARS="--clear-env-vars"
+fi
+
+SECRETS=""
+# write all env values starting with SET_SECRET_ to form ENV_VALUE1,ENV_VALUE2
+for s in $(env | grep SET_SECRET_); do
+  if [ -n "$SECRETS" ]; then
+    SECRETS="${SECRETS},"
+  fi
+  SECRETS="${SECRETS}${s#*=}"
+done
+
+if [ -n "$SECRETS" ]; then
+  SECRETS="--set-secrets=${SECRETS}"
+else
+ SECRETS="--clear-secrets"
+fi
+
 ALLOW_UNAUTHENTICATED=""
 if [ "$INPUT_ALLOW_UNAUTHENTICATED" = "true" ]; then
   ALLOW_UNAUTHENTICATED="--allow-unauthenticated"
@@ -70,18 +91,30 @@ if [ "$INPUT_NO_TRAFFIC" = "true" ]; then
   NO_TRAFFIC="--no-traffic"
 fi
 
+CLOUDSQL_INSTANCES="--clear-cloudsql-instances"
+if [ -n "$INPUT_CLOUDSQL_INSTANCES" ]; then
+  CLOUDSQL_INSTANCES="--set-cloudsql-instances=$INPUT_CLOUDSQL_INSTANCES"
+fi
+
 enableDebug
-gcloud run deploy "$INPUT_SERVICE_NAME" \
-  --platform="managed" $ALLOW_UNAUTHENTICATED $SERVICE_ACCOUNT $NO_TRAFFIC \
+gcloud beta run deploy "$INPUT_SERVICE_NAME" \
+  --platform="managed" \
   --region="$INPUT_GCP_REGION" \
-  --image="${FQ_IMAGE}" \
+  --image="$FQ_IMAGE" \
   --concurrency="$INPUT_CONCURRENCY_PER_INSTANCE" \
   --cpu="$INPUT_CPU" \
   --max-instances="$INPUT_MAX_INSTANCES" \
+  --min-instances="$INPUT_MIN_INSTANCES" \
   --memory="$INPUT_MEMORY" \
   --timeout="$INPUT_REQUEST_TIMEOUT" \
-  --revision-suffix="${REVISION_SUFFIX}" \
-  --set-env-vars="${ENV_VARS}" 2>&1 | tee gcloud.log
+  --revision-suffix="$REVISION_SUFFIX" \
+  $ALLOW_UNAUTHENTICATED \
+  $SERVICE_ACCOUNT \
+  $NO_TRAFFIC \
+  $CLOUDSQL_INSTANCES \
+  $ENV_VARS \
+  $SECRETS \
+  2>&1 | tee gcloud.log
 disableDebug
 
 ENDPOINT=$(cat gcloud.log | grep -o 'Service URL: .*')

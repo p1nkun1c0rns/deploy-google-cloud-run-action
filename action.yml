@@ -41,9 +41,13 @@ inputs:
     required: false
     default: '256Mi'
   max_instances:
-    description: 'Max nummber of instances to be scaled'
+    description: 'Max number of instances to be scaled'
     required: false
     default: '10'
+  min_instances:
+    description: 'Min number of instances to be available in idle'
+    required: false
+    default: '0'
   request_timeout:
     description: 'Timeout for a single request to be processed'
     required: false
@@ -60,6 +64,10 @@ inputs:
     description: 'Set to true to just deploy a new revision without shifting traffic'
     required: false
     default: 'false'
+  cloudsql_instances:
+    description: 'Comma separated list of CloudSQL instances to connect to'
+    required: false
+    default: ''
   debug:
     description: 'Whether the gcloud commands should be printed to output'
     required: false

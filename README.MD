@@ -1,7 +1,7 @@
 # Deploy Google Cloud Run Service Action
 
-![inbound-build](https://github.com/p1nkun1c0rns/deploy-google-cloud-run-action/workflows/Pre-Build%20Image/badge.svg)
-![event-store-build](https://github.com/p1nkun1c0rns/deploy-google-cloud-run-action/workflows/Test/badge.svg)
+![image-prebuild](https://github.com/p1nkun1c0rns/deploy-google-cloud-run-action/workflows/Pre-Build%20Image/badge.svg)
+![lint](https://github.com/p1nkun1c0rns/deploy-google-cloud-run-action/workflows/Test/badge.svg)
 
 A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-Serving).
 
@@ -18,14 +18,16 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `gcp_region` | GCP region to deploy the service in |  | true | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--region) |
 | `image_tag` | Tag of container image to be deployed | `latest` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--image) |
 | `image_tag_pattern` | Regex pattern to identify the image_tag automatically | `` | false | [see below](https://github.com/p1nkun1c0rns/deploy-google-cloud-run-action#image_tag_pattern) |
-| `concurrency_per_instance` | Max number of concurrent requests per instance, max: 80 | `80` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--concurrency) |
-| `cpu` | VCPU limit per instance | `1` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--cpu) |
-| `memory` | Memory limit per instance | `256Mi` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--memory) |
+| `concurrency_per_instance` | Max number of concurrent requests per instance, max: 250 | `80` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--concurrency) |
+| `cpu` | VCPU limit per instance, max: `4` | `1` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--cpu) |
+| `memory` | Memory limit per instance, with `4` CPU, min is `2Gi` | `256Mi` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--memory) |
 | `max_instances` | Max nummber of instances to be scaled | `10` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--max-instances) |
+| `min_instances` | Min nummber of instances to be available in idle | `0` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--min-instances) |
 | `request_timeout` | Timeout for a single request to be processed | `10s` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--timeout) |
 | `allow_unauthenticated` | Wether the service should not be protected by GCP authorization | `true` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy) |
 | `service_account` | Service Account to be used by the revision to be deployed | GCP docs: "If not provided, the revision will use the project's default service account." | false | [gcloud_run_deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--service-account) |
 | `no_traffic` | Set to true to just deploy a new revision without shifting traffic | `false` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--no-traffic) |
+| `cloudsql_instances` | Comma separated list of CloudSQL instances to connect to | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--set-cloudsql-instances) |
 | `debug` | Whether the gcloud commands should be printed to output | `false` | false | | 
 
 #### `image_tag_pattern`
@@ -51,14 +53,37 @@ All env variables starting with `SET_ENV_` are passed:
 ```yaml
 env:
   SET_ENV_DISABLE_SIGNAL_HANDLERS: yeah
-  SET_ENV_APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET }}
+  SET_ENV_APPLICATION_CONFIG: ${{ env.APPLICATION_CONFIG }}
 ```
 
 becomes:
 
 ```shell script
---set-env-vars 'DISABLE_SIGNAL_HANDLERS=yeah,APPLICATION_SECRET=***'
+--set-env-vars 'DISABLE_SIGNAL_HANDLERS=yeah,APPLICATION_CONFIG=thisisgreat'
 ```
+
+### Secrets
+
+Cloud Run supports [mounting or setting secrets](https://cloud.google.com/run/docs/configuring/secrets) from [Secret Manager](https://cloud.google.com/secret-manager) via the [`--set-secrets](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--set-secrets) argument.
+
+This action translates its environment variables as `--set-secrets` (similar to `--set-env-vars`) to simplify the use, as the argument could get quite long.
+
+Values of env variables prefixed with `SET_SECRET_` will be used as entries in the `--set-secrets` list, please see the [official documentation](https://cloud.google.com/run/docs/configuring/secrets) for the exact format:
+
+```yaml
+env:
+  SET_SECRET_SOME_ENV_SECRET: ENV_VAR_NAME=SECRET_NAME:VERSION
+  SET_SECRET_SOME_MOUNT_SECRET: PATH=SECRET_NAME:VERSION
+  SET_SECRET_SOME_ENV_SECRET_FROM_FOREIGN_PROJECT: ENV_VAR_NAME=project/PROJECT_NUMBER/secrets/SECRET_NAME:VERSION
+```
+
+becomes:
+
+```shell script
+--set-secrets=ENV_VAR_NAME=SECRET_NAME:VERSION,PATH=SECRET_NAME:VERSION,project/PROJECT_NUMBER/secrets/SECRET_NAME:VERSION
+```
+
+Remark: The service account used by the deployed Cloud Run service needs IAM rights to access all configured secrets, and the Cloud Run service account needs to be "Secret Manager Secret Accessor".
 
 ## Output
 
