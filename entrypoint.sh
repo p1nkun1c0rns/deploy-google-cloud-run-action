@@ -96,6 +96,11 @@ if [ -n "$INPUT_CLOUDSQL_INSTANCES" ]; then
   CLOUDSQL_INSTANCES="--set-cloudsql-instances=$INPUT_CLOUDSQL_INSTANCES"
 fi
 
+VPC_CONNECTOR="--clear-vpc-connector"
+if [ -n "$INPUT_VPC_CONNECTOR" ]; then
+  VPC_CONNECTOR="--vpc-connector=$INPUT_VPC_CONNECTOR"
+fi
+
 enableDebug
 gcloud beta run deploy "$INPUT_SERVICE_NAME" \
   --platform="managed" \
@@ -112,6 +117,7 @@ gcloud beta run deploy "$INPUT_SERVICE_NAME" \
   $SERVICE_ACCOUNT \
   $NO_TRAFFIC \
   $CLOUDSQL_INSTANCES \
+  $VPC_CONNECTOR \
   $ENV_VARS \
   $SECRETS \
   2>&1 | tee gcloud.log

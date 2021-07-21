@@ -28,6 +28,7 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `service_account` | Service Account to be used by the revision to be deployed | GCP docs: "If not provided, the revision will use the project's default service account." | false | [gcloud_run_deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--service-account) |
 | `no_traffic` | Set to true to just deploy a new revision without shifting traffic | `false` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--no-traffic) |
 | `cloudsql_instances` | Comma separated list of CloudSQL instances to connect to | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--set-cloudsql-instances) |
+| `vpc_connector` | Name of the Serverless VPC Access connector to use with this service | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--vpc-connector) |
 | `debug` | Whether the gcloud commands should be printed to output | `false` | false | | 
 
 #### `image_tag_pattern`

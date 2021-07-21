@@ -68,6 +68,10 @@ inputs:
     description: 'Comma separated list of CloudSQL instances to connect to'
     required: false
     default: ''
+  vpc_connector:
+    description: 'Name of the Serverless VPC Access connector to use with this service'
+    required: false
+    default: ''
   debug:
     description: 'Whether the gcloud commands should be printed to output'
     required: false
