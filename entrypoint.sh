@@ -86,11 +86,6 @@ if [ "$INPUT_SERVICE_ACCOUNT" != "default" ]; then
   SERVICE_ACCOUNT="--service-account=$INPUT_SERVICE_ACCOUNT"
 fi
 
-NO_TRAFFIC=""
-if [ "$INPUT_NO_TRAFFIC" = "true" ]; then
-  NO_TRAFFIC="--no-traffic"
-fi
-
 CLOUDSQL_INSTANCES="--clear-cloudsql-instances"
 if [ -n "$INPUT_CLOUDSQL_INSTANCES" ]; then
   CLOUDSQL_INSTANCES="--set-cloudsql-instances=$INPUT_CLOUDSQL_INSTANCES"
@@ -103,6 +98,7 @@ fi
 
 enableDebug
 gcloud beta run deploy "$INPUT_SERVICE_NAME" \
+  --no-traffic \
   --platform="managed" \
   --region="$INPUT_GCP_REGION" \
   --image="$FQ_IMAGE" \
@@ -115,7 +111,6 @@ gcloud beta run deploy "$INPUT_SERVICE_NAME" \
   --revision-suffix="$REVISION_SUFFIX" \
   $ALLOW_UNAUTHENTICATED \
   $SERVICE_ACCOUNT \
-  $NO_TRAFFIC \
   $CLOUDSQL_INSTANCES \
   $VPC_CONNECTOR \
   $ENV_VARS \
@@ -123,9 +118,23 @@ gcloud beta run deploy "$INPUT_SERVICE_NAME" \
   2>&1 | tee gcloud.log
 disableDebug
 
-ENDPOINT=$(cat gcloud.log | grep -o 'Service URL: .*')
+if [ "$INPUT_NO_TRAFFIC" != "true" ]; then
+  enableDebug
+  gcloud beta run services update-traffic "$INPUT_SERVICE_NAME" \
+    --to-latest \
+    --platform=managed \
+    --region="$INPUT_GCP_REGION" \
+    2>&1 | tee traffic.log
+  disableDebug
 
-echo ::set-output name=gcloud_log::"<pre>$(sed ':a;N;$!ba;s/\n/<br>/g' gcloud.log)</pre>"
+  ENDPOINT=$(cat traffic.log | grep -o 'URL: .*')
+  ENDPOINT="${ENDPOINT/URL: /}"
+else
+  echo "" > traffic.log
+  ENDPOINT=""
+fi
+
+echo ::set-output name=gcloud_log::"<pre>$(sed ':a;N;$!ba;s/\n/<br>/g' gcloud.log)</pre><hr><pre>$(sed ':a;N;$!ba;s/\n/<br>/g' traffic.log)</pre>"
 echo ::set-output name=cloud_run_revision::"${INPUT_SERVICE_NAME}-${REVISION_SUFFIX}"
-echo ::set-output name=cloud_run_endpoint::"${ENDPOINT/Service URL: /}"
+echo ::set-output name=cloud_run_endpoint::"${ENDPOINT}"
 echo ::set-output name=deployed_image_tag::"${IMAGE_TAG}"
