@@ -37,7 +37,29 @@ elif [ -n "$INPUT_IMAGE_TAG_PATTERN" ]; then
 fi
 
 FQ_IMAGE="${INPUT_IMAGE_NAME}:${IMAGE_TAG}"
-REVISION_SUFFIX=v$(echo "$IMAGE_TAG" | sed "s;\.;-;g")-t$(date +%s)
+REVISION_PREFIX="v$(echo "$IMAGE_TAG" | sed "s;\.;-;g")"
+REVISION_DATE="-t$(date +%s)"
+
+# Full service name must not exceed a length of 63 characters
+SERVICE_NAME_LENGTH=${#INPUT_SERVICE_NAME}
+REVISION_PREFIX_LENGTH=${#REVISION_PREFIX}
+REVISION_DATE_LENGTH=${#REVISION_DATE}
+COMPOSED_NAME_LENGTH=$(expr $SERVICE_NAME_LENGTH + $REVISION_PREFIX_LENGTH + $REVISION_DATE_LENGTH)
+
+if [ $COMPOSED_NAME_LENGTH -gt 63 ]; then
+  # revision_prefix will be shortened to have composed length in allowed range
+  OVERFLOW_LENGTH=$(expr $COMPOSED_NAME_LENGTH - 63)
+  STRIP_LENGTH=$(expr $REVISION_PREFIX_LENGTH - $OVERFLOW_LENGTH)
+  if [[ $STRIP_LENGTH -lt 0 ]]; then
+    echo "Service name to long, please shorten it, so that service + image tage are shorter than $(expr 63 - $REVISION_DATE_LENGTH) characters."
+    exit 1
+  else
+    echo "Stripping $STRIP_LENGTH chars off from revision '$REVISION_PREFIX' as full service name must not exceed 63 characters."
+  fi
+  REVISION_PREFIX=${REVISION_PREFIX:0:$STRIP_LENGTH}
+fi
+
+REVISION_SUFFIX=${REVISION_PREFIX}${REVISION_DATE}
 
 echo "Deploying $FQ_IMAGE as service $INPUT_SERVICE_NAME to $INPUT_GCP_REGION in revision $REVISION_SUFFIX."
 
