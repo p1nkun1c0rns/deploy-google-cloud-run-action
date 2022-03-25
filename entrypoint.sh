@@ -118,9 +118,20 @@ if [ -n "$INPUT_VPC_CONNECTOR" ]; then
   VPC_CONNECTOR="--vpc-connector=$INPUT_VPC_CONNECTOR"
 fi
 
+# check if service already exists, as "--no-traffic" is not allowed for new installations
+NO_TRAFFIC=""
+set +e
+enableDebug
+gcloud beta run services describe --region="$INPUT_GCP_REGION" "$INPUT_SERVICE_NAME" 2>&1 > /dev/null
+if [ $? -eq 0 ]; then
+  # 'describe' command results in an error, if service dows not exist
+  NO_TRAFFIC="--no-traffic"
+fi
+disableDebug
+set -e
+
 enableDebug
 gcloud beta run deploy "$INPUT_SERVICE_NAME" \
-  --no-traffic \
   --platform="managed" \
   --region="$INPUT_GCP_REGION" \
   --image="$FQ_IMAGE" \
@@ -131,6 +142,7 @@ gcloud beta run deploy "$INPUT_SERVICE_NAME" \
   --memory="$INPUT_MEMORY" \
   --timeout="$INPUT_REQUEST_TIMEOUT" \
   --revision-suffix="$REVISION_SUFFIX" \
+  $NO_TRAFFIC \
   $ALLOW_UNAUTHENTICATED \
   $SERVICE_ACCOUNT \
   $CLOUDSQL_INSTANCES \
