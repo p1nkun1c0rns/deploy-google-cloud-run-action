@@ -101,9 +101,10 @@ else
  SECRETS="--clear-secrets"
 fi
 
-ALLOW_UNAUTHENTICATED=""
 if [ "$INPUT_ALLOW_UNAUTHENTICATED" = "true" ]; then
   ALLOW_UNAUTHENTICATED="--allow-unauthenticated"
+else
+  ALLOW_UNAUTHENTICATED="--no-allow-unauthenticated"
 fi
 
 SERVICE_ACCOUNT=""
