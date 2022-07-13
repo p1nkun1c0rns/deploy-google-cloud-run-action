@@ -71,13 +71,19 @@ set -f
 # split on new line
 IFS='
 '
+setenv_pattern="^SET_ENV_\w+=.+$"
 ENV_VARS=""
 # write all env starting with SET_ENV_ to ENV_VARS in form KEY1=VAL1---__---KEY2=VAL2 where '---__---' is the delimiter, see: https://cloud.google.com/sdk/gcloud/reference/topic/escaping
 for e in $(env | grep SET_ENV_); do
-  if [ -n "$ENV_VARS" ]; then
-    ENV_VARS="${ENV_VARS}---__---"
+  # ignore SET_ENV_ entries with invalid name or missing value
+  if [[ "$e" =~ $setenv_pattern ]]; then
+    if [ -n "$ENV_VARS" ]; then
+      ENV_VARS="${ENV_VARS}---__---"
+    fi
+    ENV_VARS="${ENV_VARS}${e/SET_ENV_/}"
+  else
+    echo "Ignoring env '$e'"
   fi
-  ENV_VARS="${ENV_VARS}${e/SET_ENV_/}"
 done
 
 if [ -n "$ENV_VARS" ]; then
