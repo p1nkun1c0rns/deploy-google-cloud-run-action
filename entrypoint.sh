@@ -64,7 +64,11 @@ fi
 
 REVISION_SUFFIX=${REVISION_PREFIX}${REVISION_DATE}
 
-echo "Deploying $FQ_IMAGE as service $INPUT_SERVICE_NAME to $INPUT_GCP_REGION in revision $REVISION_SUFFIX."
+# lowercase service name and suffix to be DNS compliant
+SERVICE_NAME="${INPUT_SERVICE_NAME,,}"
+REVISION_SUFFIX="${REVISION_SUFFIX,,}"
+
+echo "Deploying $FQ_IMAGE as service $SERVICE_NAME to $INPUT_GCP_REGION in revision $REVISION_SUFFIX."
 
 # turn off globbing
 set -f
@@ -132,7 +136,7 @@ fi
 NO_TRAFFIC=""
 set +e
 enableDebug
-gcloud beta run services describe --region="$INPUT_GCP_REGION" "$INPUT_SERVICE_NAME" 2>&1 > /dev/null
+gcloud beta run services describe --region="$INPUT_GCP_REGION" "$SERVICE_NAME" 2>&1 > /dev/null
 if [ $? -eq 0 ]; then
   # 'describe' command results in an error, if service dows not exist
   NO_TRAFFIC="--no-traffic"
@@ -141,7 +145,7 @@ disableDebug
 set -e
 
 enableDebug
-gcloud beta run deploy "$INPUT_SERVICE_NAME" \
+gcloud beta run deploy "$SERVICE_NAME" \
   --platform="managed" \
   --region="$INPUT_GCP_REGION" \
   --image="$FQ_IMAGE" \
@@ -164,7 +168,7 @@ disableDebug
 
 if [ "$INPUT_NO_TRAFFIC" != "true" ]; then
   enableDebug
-  gcloud beta run services update-traffic "$INPUT_SERVICE_NAME" \
+  gcloud beta run services update-traffic "$SERVICE_NAME" \
     --to-latest \
     --platform=managed \
     --region="$INPUT_GCP_REGION" \
@@ -179,6 +183,6 @@ else
 fi
 
 echo ::set-output name=gcloud_log::"<pre>$(sed ':a;N;$!ba;s/\n/<br>/g' gcloud.log)</pre><hr><pre>$(sed ':a;N;$!ba;s/\n/<br>/g' traffic.log)</pre>"
-echo ::set-output name=cloud_run_revision::"${INPUT_SERVICE_NAME}-${REVISION_SUFFIX}"
+echo ::set-output name=cloud_run_revision::"${SERVICE_NAME}-${REVISION_SUFFIX}"
 echo ::set-output name=cloud_run_endpoint::"${ENDPOINT}"
 echo ::set-output name=deployed_image_tag::"${IMAGE_TAG}"
