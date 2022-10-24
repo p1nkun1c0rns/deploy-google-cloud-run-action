@@ -196,7 +196,7 @@ else
   ENDPOINT=""
 fi
 
-echo ::set-output name=gcloud_log::"<pre>$(sed ':a;N;$!ba;s/\n/<br>/g' gcloud.log)</pre><hr><pre>$(sed ':a;N;$!ba;s/\n/<br>/g' traffic.log)</pre>"
-echo ::set-output name=cloud_run_revision::"${SERVICE_NAME}-${REVISION_SUFFIX}"
-echo ::set-output name=cloud_run_endpoint::"${ENDPOINT}"
-echo ::set-output name=deployed_image_tag::"${IMAGE_TAG}"
+echo gcloud_log="<pre>$(sed ':a;N;$!ba;s/\n/<br>/g' gcloud.log)</pre><hr><pre>$(sed ':a;N;$!ba;s/\n/<br>/g' traffic.log)</pre>" >> $GITHUB_OUTPUT
+echo cloud_run_revision="${SERVICE_NAME}-${REVISION_SUFFIX}" >> $GITHUB_OUTPUT
+echo cloud_run_endpoint="${ENDPOINT}" >> $GITHUB_OUTPUT
+echo deployed_image_tag="${IMAGE_TAG}" >> $GITHUB_OUTPUT
