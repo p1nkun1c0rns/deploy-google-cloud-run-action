@@ -60,6 +60,10 @@ inputs:
     description: 'Set to false so that CPU is always allocated and available even when there are no incoming requests'
     required: false
     default: 'true'
+  startup_boost:
+    description: 'Set to true to have additional CPU available at startup time'
+    required: false
+    default: 'false'
   service_account:
     description: 'Service Account to be used by the revision to be deployed'
     required: false

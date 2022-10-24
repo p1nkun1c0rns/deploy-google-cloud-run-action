@@ -123,6 +123,12 @@ else
   CPU_THROTTLING="--no-cpu-throttling"
 fi
 
+if [ "$INPUT_STARTUP_BOOST" = "true" ]; then
+  STARTUP_BOOST="--cpu-boost"
+else
+  STARTUP_BOOST="--no-cpu-boost"
+fi
+
 SERVICE_ACCOUNT=""
 if [ "$INPUT_SERVICE_ACCOUNT" != "default" ]; then
   SERVICE_ACCOUNT="--service-account=$INPUT_SERVICE_ACCOUNT"
@@ -165,6 +171,7 @@ gcloud beta run deploy "$SERVICE_NAME" \
   $NO_TRAFFIC \
   $ALLOW_UNAUTHENTICATED \
   $CPU_THROTTLING \
+  $STARTUP_BOOST \
   $SERVICE_ACCOUNT \
   $CLOUDSQL_INSTANCES \
   $VPC_CONNECTOR \
