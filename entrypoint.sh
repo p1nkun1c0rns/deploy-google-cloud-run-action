@@ -117,6 +117,12 @@ else
   ALLOW_UNAUTHENTICATED="--no-allow-unauthenticated"
 fi
 
+if [ "$INPUT_CPU_THROTTLING" = "true" ]; then
+  CPU_THROTTLING="--cpu-throttling"
+else
+  CPU_THROTTLING="--no-cpu-throttling"
+fi
+
 SERVICE_ACCOUNT=""
 if [ "$INPUT_SERVICE_ACCOUNT" != "default" ]; then
   SERVICE_ACCOUNT="--service-account=$INPUT_SERVICE_ACCOUNT"
@@ -158,6 +164,7 @@ gcloud beta run deploy "$SERVICE_NAME" \
   --revision-suffix="$REVISION_SUFFIX" \
   $NO_TRAFFIC \
   $ALLOW_UNAUTHENTICATED \
+  $CPU_THROTTLING \
   $SERVICE_ACCOUNT \
   $CLOUDSQL_INSTANCES \
   $VPC_CONNECTOR \

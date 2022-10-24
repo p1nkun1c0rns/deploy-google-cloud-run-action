@@ -56,6 +56,10 @@ inputs:
     description: 'Wether the service should not be protected by GCP authorization'
     required: false
     default: 'true'
+  cpu-throttling:
+    description: 'Set to false so that CPU is always allocated and available even when there are no incoming requests'
+    required: false
+    default: 'true'
   service_account:
     description: 'Service Account to be used by the revision to be deployed'
     required: false
