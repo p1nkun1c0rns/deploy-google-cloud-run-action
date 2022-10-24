@@ -24,7 +24,8 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `max_instances` | Max nummber of instances to be scaled | `10` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--max-instances) |
 | `min_instances` | Min nummber of instances to be available in idle | `0` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--min-instances) |
 | `request_timeout` | Timeout for a single request to be processed | `10s` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--timeout) |
-| `allow_unauthenticated` | Wether the service should not be protected by GCP authorization | `true` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy) |
+| `allow_unauthenticated` | Whether the service should not be protected by GCP authorization | `true` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--[no-]allow-unauthenticated) |
+| `cpu_throttling` | Set to false so that CPU is always allocated and available even when there are no incoming requests | `true` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--[no-]cpu-throttling) |
 | `service_account` | Service Account to be used by the revision to be deployed | GCP docs: "If not provided, the revision will use the project's default service account." | false | [gcloud_run_deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--service-account) |
 | `no_traffic` | Set to true to just deploy a new revision without shifting traffic | `false` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--no-traffic) |
 | `cloudsql_instances` | Comma separated list of CloudSQL instances to connect to | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--set-cloudsql-instances) |
