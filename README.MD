@@ -31,6 +31,7 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `no_traffic` | Set to true to just deploy a new revision without shifting traffic | `false` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--no-traffic) |
 | `cloudsql_instances` | Comma separated list of CloudSQL instances to connect to | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--set-cloudsql-instances) |
 | `vpc_connector` | Name of the Serverless VPC Access connector to use with this service | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--vpc-connector) |
+| `vpc_egress` | Outbound traffic configuration, if a vpc_connector is configured; options are: `private-ranges-only`, `all-traffic`  | `private-ranges-only` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--vpc-egress) |
 | `debug` | Whether the gcloud commands should be printed to output | `false` | false | | 
 
 #### `image_tag_pattern`

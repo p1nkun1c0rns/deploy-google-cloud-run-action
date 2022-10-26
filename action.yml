@@ -80,6 +80,10 @@ inputs:
     description: 'Name of the Serverless VPC Access connector to use with this service'
     required: false
     default: ''
+  vpc_egress:
+    description: 'Outbound traffic configuration, if a vpc_connector is configured'
+    required: false
+    default: 'private-ranges-only'
   debug:
     description: 'Whether the gcloud commands should be printed to output'
     required: false

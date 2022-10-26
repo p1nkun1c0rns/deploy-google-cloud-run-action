@@ -139,9 +139,14 @@ if [ -n "$INPUT_CLOUDSQL_INSTANCES" ]; then
   CLOUDSQL_INSTANCES="--set-cloudsql-instances=$INPUT_CLOUDSQL_INSTANCES"
 fi
 
+VPC_EGRESS=""
 VPC_CONNECTOR="--clear-vpc-connector"
 if [ -n "$INPUT_VPC_CONNECTOR" ]; then
   VPC_CONNECTOR="--vpc-connector=$INPUT_VPC_CONNECTOR"
+
+  if [ -n "${INPUT_VPC_EGRESS}" ]; then
+    VPC_EGRESS="--vpc-egress=$INPUT_VPC_EGRESS"
+  fi
 fi
 
 # check if service already exists, as "--no-traffic" is not allowed for new installations
@@ -174,7 +179,7 @@ gcloud beta run deploy "$SERVICE_NAME" \
   $STARTUP_BOOST \
   $SERVICE_ACCOUNT \
   $CLOUDSQL_INSTANCES \
-  $VPC_CONNECTOR \
+  $VPC_CONNECTOR $VPC_EGRESS \
   $ENV_VARS \
   $SECRETS \
   2>&1 | tee gcloud.log
