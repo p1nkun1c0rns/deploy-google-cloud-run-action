@@ -32,6 +32,7 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `cloudsql_instances` | Comma separated list of CloudSQL instances to connect to | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--set-cloudsql-instances) |
 | `vpc_connector` | Name of the Serverless VPC Access connector to use with this service | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--vpc-connector) |
 | `vpc_egress` | Outbound traffic configuration, if a vpc_connector is configured; options are: `private-ranges-only`, `all-traffic`  | `private-ranges-only` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--vpc-egress) |
+| `execution_environment` | Selects the execution environment where the application will run; options are: `gen1`, `gen2` | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--execution-environment), [cloud run docs](https://cloud.google.com/run/docs/about-execution-environments) |
 | `debug` | Whether the gcloud commands should be printed to output | `false` | false | | 
 
 #### `image_tag_pattern`
@@ -128,7 +129,7 @@ Remark: The service account used by the deployed Cloud Run service needs IAM rig
 
 ### Prebuild latest image
 
-Instead of using the latest (`@master`) or a tagged version there's always a prebuild image in the `action` branch:
+Instead of using the latest (`@master`) or a tagged version there's a prebuild image of the latest release in the `action` branch available:
 
 ```yaml
   - name: Deploy Cloud Run

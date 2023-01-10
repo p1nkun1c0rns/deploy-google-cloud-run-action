@@ -149,6 +149,11 @@ if [ -n "$INPUT_VPC_CONNECTOR" ]; then
   fi
 fi
 
+EXECUTION_ENVIRONMENT=""
+if [ -n "$INPUT_EXECUTION_ENVIRONMENT" ]; then
+  EXECUTION_ENVIRONMENT="--execution-environment=$INPUT_EXECUTION_ENVIRONMENT"
+fi
+
 # check if service already exists, as "--no-traffic" is not allowed for new installations
 NO_TRAFFIC=""
 set +e
@@ -180,6 +185,7 @@ gcloud beta run deploy "$SERVICE_NAME" \
   $SERVICE_ACCOUNT \
   $CLOUDSQL_INSTANCES \
   $VPC_CONNECTOR $VPC_EGRESS \
+  $EXECUTION_ENVIRONMENT \
   $ENV_VARS \
   $SECRETS \
   2>&1 | tee gcloud.log

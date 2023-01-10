@@ -88,6 +88,10 @@ inputs:
     description: 'Whether the gcloud commands should be printed to output'
     required: false
     default: 'false'
+  execution_environment:
+    description: 'Selects the execution environment where the application will run'
+    required: false
+    default: ''
 outputs:
   cloud_run_revision:
     description: 'Revision of the deployed service'
