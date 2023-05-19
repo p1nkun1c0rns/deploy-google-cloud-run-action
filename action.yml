@@ -84,6 +84,10 @@ inputs:
     description: 'Outbound traffic configuration, if a vpc_connector is configured'
     required: false
     default: 'private-ranges-only'
+  ingress:
+    description: 'Allowed ingress traffic sources'
+    required: false
+    default: 'all'
   debug:
     description: 'Whether the gcloud commands should be printed to output'
     required: false

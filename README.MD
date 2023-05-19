@@ -32,6 +32,7 @@ A Github Action that deploys a service to Google Cloud Run (GCP managed Knative-
 | `cloudsql_instances` | Comma separated list of CloudSQL instances to connect to | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--set-cloudsql-instances) |
 | `vpc_connector` | Name of the Serverless VPC Access connector to use with this service | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--vpc-connector) |
 | `vpc_egress` | Outbound traffic configuration, if a vpc_connector is configured; options are: `private-ranges-only`, `all-traffic`  | `private-ranges-only` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--vpc-egress) |
+| `ingress` | Allowed ingress traffic sources; options are: `all`, `internal`, `internal-and-cloud-load-balancing`  | `all` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--ingress) |
 | `execution_environment` | Selects the execution environment where the application will run; options are: `gen1`, `gen2` | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--execution-environment), [cloud run docs](https://cloud.google.com/run/docs/about-execution-environments) |
 | `debug` | Whether the gcloud commands should be printed to output | `false` | false | | 
 
