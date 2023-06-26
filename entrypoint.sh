@@ -171,6 +171,8 @@ fi
 disableDebug
 set -e
 
+LABELS="version=${IMAGE_TAG//./-}"
+
 enableDebug
 gcloud beta run deploy "$SERVICE_NAME" \
   --platform="managed" \
@@ -183,6 +185,7 @@ gcloud beta run deploy "$SERVICE_NAME" \
   --memory="$INPUT_MEMORY" \
   --timeout="$INPUT_REQUEST_TIMEOUT" \
   --revision-suffix="$REVISION_SUFFIX" \
+  --clear-labels --labels="$LABELS" \
   $NO_TRAFFIC \
   $ALLOW_UNAUTHENTICATED \
   $CPU_THROTTLING \
