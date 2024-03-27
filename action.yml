@@ -84,6 +84,18 @@ inputs:
     description: 'Outbound traffic configuration, if a vpc_connector is configured'
     required: false
     default: 'private-ranges-only'
+  vpc_network:
+    description: 'Name of VPC network when using direct VPC egress'
+    required: false
+    default: ''
+  vpc_subnet:
+    description: 'Name of VPC network''s subnet'
+    required: false
+    default: ''
+  vpc_network_tags:
+    description: 'Comma-separated list of network tags'
+    required: false
+    default: ''
   ingress:
     description: 'Allowed ingress traffic sources'
     required: false
