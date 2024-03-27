@@ -149,6 +149,30 @@ if [ -n "$INPUT_VPC_CONNECTOR" ]; then
   fi
 fi
 
+# Network and Network Tags can/must be cleared. There is no --clear-subnet flag
+# At most one of --clear-network | --network --subnet --clear-network-tags | --network-tags can be specified
+VPC_NETWORK="--clear-network"
+VPC_SUBNET=""
+VPC_NETWORK_TAGS=""
+
+if [ -n "$INPUT_VPC_NETWORK" ]; then
+  VPC_NETWORK="--network=$INPUT_VPC_NETWORK"
+  VPC_NETWORK_TAGS="--clear-network-tags"     # if VPC_NETWORK is set and NETWORK_TAGS is not
+
+  if [ -n "$INPUT_VPC_SUBNET" ]; then
+  VPC_SUBNET="--subnet=$INPUT_VPC_SUBNET"
+  fi
+
+  if [ -n "$INPUT_VPC_NETWORK_TAGS" ]; then
+  VPC_NETWORK_TAGS="--network-tags=$INPUT_VPC_NETWORK_TAGS"
+  fi
+
+  if [ -n "${INPUT_VPC_EGRESS}" ]; then
+    VPC_EGRESS="--vpc-egress=$INPUT_VPC_EGRESS"
+  fi
+
+fi
+
 INGRESS=""
 if [ -n "$INPUT_INGRESS" ]; then
   INGRESS="--ingress=$INPUT_INGRESS"
@@ -193,6 +217,7 @@ gcloud beta run deploy "$SERVICE_NAME" \
   $SERVICE_ACCOUNT \
   $CLOUDSQL_INSTANCES \
   $VPC_CONNECTOR $VPC_EGRESS \
+  $VPC_NETWORK $VPC_SUBNET $VPC_NETWORK_TAGS \
   $INGRESS \
   $EXECUTION_ENVIRONMENT \
   $ENV_VARS \
