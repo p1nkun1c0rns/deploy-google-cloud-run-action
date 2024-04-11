@@ -10,7 +10,8 @@ inputs:
     required: true
   service_account_key:
     description: 'Base64 encoded JSON key for GCP service account'
-    required: true
+    required: false
+    default: ''
   image_name:
     description: 'Name of container image to be deployed'
     required: true
