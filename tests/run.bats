@@ -51,8 +51,8 @@ function debug() {
 
   debug "${status}" "${output}" "${lines}"
 
-  echo $output | grep -q "Could not read json file key.json"
-  [[ "${status}" -eq 1 ]]
+  echo $output | grep -q "Deploying :latest as service"
+  [[ "${status}" -eq 2 ]]
 }
 
 @test "start hadolint" {

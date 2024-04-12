@@ -21,13 +21,13 @@ SERVICE_NAME_LENGTH_LIMIT=62
 
 set -e
 set -o pipefail
-
-echo "$INPUT_SERVICE_ACCOUNT_KEY" | base64 -d >key.json
-trap "{ rm -f key.json; }" EXIT
-
-enableDebug
-gcloud auth activate-service-account --key-file=key.json --project="$INPUT_PROJECT_ID"
-disableDebug
+if [ -n "$INPUT_SERVICE_ACCOUNT_KEY" ]; then
+  echo "$INPUT_SERVICE_ACCOUNT_KEY" | base64 -d >key.json
+  trap "{ rm -f key.json; }" EXIT
+  enableDebug
+  gcloud auth activate-service-account --key-file=key.json --project="$INPUT_PROJECT_ID"
+  disableDebug
+fi
 
 IMAGE_TAG="latest"
 if [ -n "$INPUT_IMAGE_TAG" ]; then
