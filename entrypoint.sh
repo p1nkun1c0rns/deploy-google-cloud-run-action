@@ -183,6 +183,11 @@ if [ -n "$INPUT_EXECUTION_ENVIRONMENT" ]; then
   EXECUTION_ENVIRONMENT="--execution-environment=$INPUT_EXECUTION_ENVIRONMENT"
 fi
 
+HTTP2="--no-use-http2"
+if [ "$INPUT_HTTP2" = "true" ]; then
+  HTTP2="--use-http2"
+fi
+
 # check if service already exists, as "--no-traffic" is not allowed for new installations
 NO_TRAFFIC=""
 set +e
@@ -219,6 +224,7 @@ gcloud beta run deploy "$SERVICE_NAME" \
   $VPC_CONNECTOR $VPC_EGRESS \
   $VPC_NETWORK $VPC_SUBNET $VPC_NETWORK_TAGS \
   $INGRESS \
+  $HTTP2 \
   $EXECUTION_ENVIRONMENT \
   $ENV_VARS \
   $SECRETS \

@@ -149,6 +149,7 @@ Remark: The service account used by the deployed Cloud Run service needs IAM rig
 | `vpc_subnet` | Name of VPC network's subnet when using direct VPC egress w/o vpc connector | | false | [gcloud run deploy](https://cloud.google.com/run/docs/configuring/vpc-direct-vpc#direct-vpc-service) |
 | `vpc_network_tags` | Comma-separated list of network tags for the VPC network to be used | | false | [gcloud run deploy](https://cloud.google.com/run/docs/configuring/vpc-direct-vpc#direct-vpc-service)|
 | `ingress` | Allowed ingress traffic sources; options are: `all`, `internal`, `internal-and-cloud-load-balancing` | `all` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--ingress) |
+| `http2` | Whether or not to enable http2 end-to-end | `false` | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--[no-]use-http2) |
 | `execution_environment` | Selects the execution environment where the application will run; options are: `gen1`, `gen2` | | false | [gcloud run deploy](https://cloud.google.com/sdk/gcloud/reference/run/deploy#--execution-environment), [cloud run docs](https://cloud.google.com/run/docs/about-execution-environments) |
 | `debug` | Whether the gcloud commands should be printed to output | `false` | false | | 
 
