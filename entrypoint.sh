@@ -204,7 +204,6 @@ LABELS="version=${IMAGE_TAG//./-}"
 
 enableDebug
 gcloud beta run deploy "$SERVICE_NAME" \
-  --platform="managed" \
   --region="$INPUT_GCP_REGION" \
   --image="$FQ_IMAGE" \
   --concurrency="$INPUT_CONCURRENCY_PER_INSTANCE" \

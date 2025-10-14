@@ -19,6 +19,12 @@ jobs:
           QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
         run: |
           docker build . -f Dockerfile -t "$IMAGE"
+
+          # Structure Test
+          sudo curl -Lso /usr/local/bin/container-structure-test https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64
+          sudo chmod a+x /usr/local/bin/container-structure-test
+          container-structure-test test --config container-structure-test.yaml --image "$IMAGE"
+
           docker login -u="$QUAY_USER" -p="$QUAY_PASSWORD" quay.io
           docker push "$IMAGE"
           echo "FROM $IMAGE" > Dockerfile

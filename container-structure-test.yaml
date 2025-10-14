@@ -1,0 +1,17 @@
+schemaVersion: 2.0.0
+
+commandTests:
+    - name: 'Python is bundled'
+      command: 'gcloud'
+      args: ['version']
+      expectedOutput:
+          - 'bundled-python3-unix 3.*'
+
+    - name: 'run deploy command available'
+      command: 'gcloud'
+      args: ['run', 'deploy', '--help']
+      expectedOutput:
+          - 'SYNOPSIS'
+
+metadataTest:
+    entrypoint: ["/entrypoint.sh"]
