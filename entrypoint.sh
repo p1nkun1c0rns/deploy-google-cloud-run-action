@@ -192,7 +192,7 @@ fi
 NO_TRAFFIC=""
 set +e
 enableDebug
-gcloud beta run services describe --region="$INPUT_GCP_REGION" "$SERVICE_NAME" 2>&1 > /dev/null
+gcloud run services describe --region="$INPUT_GCP_REGION" "$SERVICE_NAME" 2>&1 > /dev/null
 if [ $? -eq 0 ]; then
   # 'describe' command results in an error, if service dows not exist
   NO_TRAFFIC="--no-traffic"
@@ -203,7 +203,7 @@ set -e
 LABELS="version=${IMAGE_TAG//./-}"
 
 enableDebug
-gcloud beta run deploy "$SERVICE_NAME" \
+gcloud run deploy "$SERVICE_NAME" \
   --region="$INPUT_GCP_REGION" \
   --image="$FQ_IMAGE" \
   --concurrency="$INPUT_CONCURRENCY_PER_INSTANCE" \
@@ -232,7 +232,7 @@ disableDebug
 
 if [ "$INPUT_NO_TRAFFIC" != "true" ]; then
   enableDebug
-  gcloud beta run services update-traffic "$SERVICE_NAME" \
+  gcloud run services update-traffic "$SERVICE_NAME" \
     --to-latest \
     --platform=managed \
     --region="$INPUT_GCP_REGION" \
