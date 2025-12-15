@@ -1,4 +1,4 @@
-FROM google/cloud-sdk:548.0.0-alpine
+FROM google/cloud-sdk:549.0.1-alpine
 
 COPY entrypoint.sh /entrypoint.sh
 RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.8.1/jq-linux-amd64 -O /usr/bin/jq && \
