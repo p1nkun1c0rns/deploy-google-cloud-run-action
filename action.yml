@@ -65,6 +65,10 @@ inputs:
     description: 'Set to true to have additional CPU available at startup time'
     required: false
     default: 'false'
+  liveness_probe:
+    description: 'Comma separated KEY=VALUE settings of the liveness probe, e.g. httpGet.path=/healthz,periodSeconds=30'
+    required: false
+    default: ''
   service_account:
     description: 'Service Account to be used by the revision to be deployed'
     required: false
